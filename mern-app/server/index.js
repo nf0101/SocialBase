@@ -41,3 +41,9 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🚀 Server in ascolto sulla porta ${PORT}`);
 });
+
+import profilesRoutes from './routes/profiles.js';
+import activitiesRoutes from './routes/activities.js';
+
+app.use('/api/profiles', profilesRoutes);
+app.use('/api/activities', activitiesRoutes);
