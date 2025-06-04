@@ -1,24 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function App() {
+  const [dbStatus, setDbStatus] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    axios.get('/api/db-status')
+        .then(res => {
+          setDbStatus(res.data.message);
+        })
+        .catch(err => {
+          setError('❌ Errore durante la connessione al DB');
+        });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div style={{ textAlign: 'center', marginTop: '100px' }}>
+        <h1>Stato della Connessione al Database</h1>
+        {dbStatus && <p style={{ color: 'green' }}>{dbStatus}</p>}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+      </div>
   );
 }
 
