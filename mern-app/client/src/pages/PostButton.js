@@ -33,6 +33,37 @@ function PostButton() {
     }
   };
 
+  const handleCreateActivity = async () => {
+    try {
+      const res = await axios.post('/api/activities/create', {
+        nome: 'Lezione di React',
+        descrizione: 'Introduzione ai componenti funzionali',
+        data: new Date()
+      });
+      console.log('✅ Attività creata:', res.data);
+      alert('✅ Attività creata! Guarda la console!');
+    } catch (err) {
+      console.error('❌ Errore creazione attività:', err);
+      alert('❌ POST attività fallita. Guarda la console.');
+    }
+  };
+
+  const handleUpdateActivity = async () => {
+    try {
+      const idAttivita = '6841727df0efe10df97fb00a';
+      const res = await axios.put(`/api/activities/update/${idAttivita}`, {
+        nome: 'Lezione aggiornata di React',
+        descrizione: 'Hooks e gestione stato',
+        data: new Date()
+      });
+      console.log('🛠️ Attività aggiornata:', res.data);
+      alert('🛠️ PUT attività fatta! Guarda la console!');
+    } catch (err) {
+      console.error('❌ Errore aggiornamento attività:', err);
+      alert('❌ PUT attività fallita. Guarda la console.');
+    }
+  };
+
   return (
     <div style={{ textAlign: 'center', marginTop: '100px' }}>
       <button
@@ -47,7 +78,7 @@ function PostButton() {
           marginRight: '10px'
         }}
       >
-        🔘 PULSANTINO (POST)
+        🔘 PULSANTINO (POST profilo)
       </button>
 
       <button
@@ -58,10 +89,40 @@ function PostButton() {
           background: 'green',
           color: 'white',
           border: 'none',
+          borderRadius: '8px',
+          marginRight: '10px'
+        }}
+      >
+        ✏️ pulsanTINOtino (PUT profilo)
+      </button>
+
+      <button
+        onClick={handleCreateActivity}
+        style={{
+          fontSize: '20px',
+          padding: '16px',
+          background: 'orange',
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          marginRight: '10px'
+        }}
+      >
+        🔨 Crea attività (POST)
+      </button>
+
+      <button
+        onClick={handleUpdateActivity}
+        style={{
+          fontSize: '20px',
+          padding: '16px',
+          background: 'blue',
+          color: 'white',
+          border: 'none',
           borderRadius: '8px'
         }}
       >
-        ✏️ pulsanTINOtino (PUT)
+        🛠️ Aggiorna attività (PUT)
       </button>
     </div>
   );
