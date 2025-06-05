@@ -19,7 +19,7 @@ function PostButton() {
 
   const handleUpdate = async () => {
     try {
-      const idProfilo = '684169617837e998cb1768fd'; 
+      const idProfilo = '68418119dddf75bb651bb533'; 
       const res = await axios.put(`/api/profiles/update/${idProfilo}`, {
         nome: 'Lowrenzo',
         email: 'Lowrenzo@Insignwe',
@@ -50,7 +50,7 @@ function PostButton() {
 
   const handleUpdateActivity = async () => {
     try {
-      const idAttivita = '6841727df0efe10df97fb00a';
+      const idAttivita = '684181e0dddf75bb651bb538';
       const res = await axios.put(`/api/activities/update/${idAttivita}`, {
         nome: 'Lezione aggiornata di React',
         descrizione: 'Hooks e gestione stato',
@@ -61,6 +61,30 @@ function PostButton() {
     } catch (err) {
       console.error('❌ Errore aggiornamento attività:', err);
       alert('❌ PUT attività fallita. Guarda la console.');
+    }
+  };
+
+  const handleDeleteProfile = async () => {
+    try {
+      const idProfilo = '68418119dddf75bb651bb533'; // Cambia con l'ID reale
+      const res = await axios.delete(`/api/profiles/delete/${idProfilo}`);
+      console.log('🗑️ Profilo eliminato:', res.data);
+      alert('🗑️ DELETE profilo fatta! Guarda la console!');
+    } catch (err) {
+      console.error('❌ Errore DELETE profilo:', err);
+      alert('❌ DELETE profilo fallita. Guarda la console.');
+    }
+  };
+
+  const handleDeleteActivity = async () => {
+    try {
+      const idAttivita = '684181e0dddf75bb651bb538'; // Cambia con l'ID reale
+      const res = await axios.delete(`/api/activities/delete/${idAttivita}`);
+      console.log('🗑️ Attività eliminata:', res.data);
+      alert('🗑️ DELETE attività fatta! Guarda la console!');
+    } catch (err) {
+      console.error('❌ Errore DELETE attività:', err);
+      alert('❌ DELETE attività fallita. Guarda la console.');
     }
   };
 
@@ -119,10 +143,42 @@ function PostButton() {
           background: 'blue',
           color: 'white',
           border: 'none',
-          borderRadius: '8px'
+          borderRadius: '8px',
+          marginRight: '10px'
         }}
       >
         🛠️ Aggiorna attività (PUT)
+      </button>
+
+      <button
+        onClick={handleDeleteProfile}
+        style={{
+          fontSize: '20px',
+          padding: '16px',
+          background: 'red',
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          marginTop: '20px',
+          marginRight: '10px'
+        }}
+      >
+        🗑️ Elimina profilo (DELETE)
+      </button>
+
+      <button
+        onClick={handleDeleteActivity}
+        style={{
+          fontSize: '20px',
+          padding: '16px',
+          background: 'purple',
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          marginTop: '20px'
+        }}
+      >
+        🗑️ Elimina attività (DELETE)
       </button>
     </div>
   );

@@ -11,6 +11,7 @@ export const getActivities = async (req, res) => {
 
 };
 
+//READ attività
 export const getActivitiesWithProfiles = async (req, res) => {
     try {
         const results = await Activity.aggregate([
@@ -37,6 +38,7 @@ export const getActivitiesWithProfiles = async (req, res) => {
     }
 };
 
+// CREATE attività
 export const createActivity = async (req, res) => {
   try {
     const nuovaAttivita = new Activity(req.body);
@@ -48,6 +50,7 @@ export const createActivity = async (req, res) => {
   }
 };
 
+// UPDATE attività
 export const updateActivity = async (req, res) => {
   try {
     const { id } = req.params;
@@ -60,5 +63,21 @@ export const updateActivity = async (req, res) => {
     res.status(200).json(aggiornata);
   } catch (error) {
     res.status(400).json({ error: 'Errore durante l\'aggiornamento dell\'attività' });
+  }
+};
+
+// DELETE attività
+export const deleteActivity = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const eliminata = await Activity.findByIdAndDelete(id);
+
+    if (!eliminata) {
+      return res.status(404).json({ error: 'Attività non trovata' });
+    }
+
+    res.status(200).json({ message: 'Attività eliminata con successo' });
+  } catch (err) {
+    res.status(400).json({ error: 'Errore durante l\'eliminazione' });
   }
 };
