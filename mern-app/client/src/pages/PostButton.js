@@ -23,7 +23,7 @@ function PostButton() {
         onClick={handleClick}
         style={{ fontSize: '24px', padding: '20px', background: 'tomato', color: 'white', border: 'none', borderRadius: '8px' }}
       >
-        🔘 PULSANTINO DIMMERDA
+        🔘 PULSANTINO
       </button>
     </div>
   );
