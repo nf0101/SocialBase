@@ -36,3 +36,14 @@ export const getActivitiesWithProfiles = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+export const createActivity = async (req, res) => {
+  try {
+    const nuovaAttivita = new Activity(req.body);
+    const savedActivity = await nuovaAttivita.save();
+    res.status(201).json(savedActivity);
+  } catch (error) {
+    console.error('Errore nella creazione:', error);
+    res.status(400).json({ error: 'Errore nella creazione dell\'attività' });
+  }
+};

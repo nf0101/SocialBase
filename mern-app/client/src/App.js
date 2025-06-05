@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PostButton from './pages/PostButton'; 
 import axios from 'axios';
 
 function App() {
@@ -20,7 +21,11 @@ function App() {
         <h1>Stato della Connessione al Database</h1>
         {dbStatus && <p style={{ color: 'green' }}>{dbStatus}</p>}
         {error && <p style={{ color: 'red' }}>{error}</p>}
+        <h1>Testa la POST al DB</h1>
+      <PostButton />
       </div>
+
+      
   );
 }
 
