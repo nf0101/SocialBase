@@ -12,7 +12,7 @@ const ProfilesPage = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [foundCount, setFoundCount] = useState(0);
-    const limit = 50;
+    const limit = 30;
     const [searchValue, setSearchValue] = useState('');
     const [searchField, setSearchField] = useState('username');
     const [filterPrivate, setFilterPrivate] = useState('');

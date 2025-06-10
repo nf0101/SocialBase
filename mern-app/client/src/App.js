@@ -22,10 +22,8 @@ function App() {
 
   return (
       <div style={{ textAlign: 'center', marginTop: '100px' }}>
-        <h1>Stato della Connessione al Database</h1>
         {dbStatus && <p style={{ color: 'green' }}>{dbStatus}</p>}
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <h1>Testa la POST al DB</h1>
         <PostButton />
           <Router>
               <nav>
