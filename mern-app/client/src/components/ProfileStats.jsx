@@ -29,14 +29,25 @@ const ProfileStats = ({ profiles }) => {
     const generateCompletenessDistribution = (profiles, step = 10) => {
         const bins = Array.from({ length: 100 / step }, (_, i) => i * step);
         const distribution = bins.map(bin => ({ range: `${bin}-${bin + step}`, fake: 0, legit: 0 }));
+
         profiles.forEach(profile => {
-            const value = parseFloat(profile.profile_completeness?.$numberDouble || profile.profile_completeness) * 100;
+            const valueRaw = profile.profile_completeness?.$numberDouble || profile.profile_completeness;
+            const value = parseFloat(valueRaw || 0) * 100;
+
+            if (isNaN(value)) return;
+
             const binIndex = Math.min(Math.floor(value / step), distribution.length - 1);
-            if (profile.is_fake === 'True') distribution[binIndex].fake += 1;
-            else distribution[binIndex].legit += 1;
+
+            if (profile.is_fake === 'True') {
+                distribution[binIndex].fake += 1;
+            } else {
+                distribution[binIndex].legit += 1;
+            }
         });
+
         return distribution;
     };
+
 
     const computeAvg = (profiles, field) => {
         let fakeTotal = 0, legitTotal = 0, fakeCount = 0, legitCount = 0;

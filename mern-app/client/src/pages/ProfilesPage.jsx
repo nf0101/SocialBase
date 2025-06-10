@@ -64,7 +64,8 @@ const ProfilesPage = () => {
             setProfiles(res.data.data || []);
             setTotalPages(res.data.totalPages || 1);
             setPage(res.data.page || 1);
-            setFoundCount(res.data.data?.length * res.data.totalPages || 0);
+            setFoundCount(res.data.total || 0);
+
 
             // 🔄 Aggiorna anche allProfiles
             const res2 = await axios.get('/api/profiles/filtered', { params: filters });
