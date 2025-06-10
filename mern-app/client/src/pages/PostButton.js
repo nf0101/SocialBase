@@ -102,7 +102,7 @@ function PostButton() {
           marginRight: '10px'
         }}
       >
-        🔘 PULSANTINO (POST profilo)
+        CREATE PROFILO 
       </button>
 
       <button
@@ -117,7 +117,7 @@ function PostButton() {
           marginRight: '10px'
         }}
       >
-        ✏️ pulsanTINOtino (PUT profilo)
+        AGGIORNA PROFILO
       </button>
 
       <button
@@ -132,7 +132,7 @@ function PostButton() {
           marginRight: '10px'
         }}
       >
-        🔨 Crea attività (POST)
+        CREATE ATTIVITA'
       </button>
 
       <button
@@ -147,7 +147,7 @@ function PostButton() {
           marginRight: '10px'
         }}
       >
-        🛠️ Aggiorna attività (PUT)
+        AGGIORNA ATTIVITA'
       </button>
 
       <button
@@ -163,7 +163,7 @@ function PostButton() {
           marginRight: '10px'
         }}
       >
-        🗑️ Elimina profilo (DELETE)
+        ELIMINA PROFILO
       </button>
 
       <button
@@ -178,7 +178,7 @@ function PostButton() {
           marginTop: '20px'
         }}
       >
-        🗑️ Elimina attività (DELETE)
+        ELIMINA ATTIVITA'
       </button>
     </div>
   );
