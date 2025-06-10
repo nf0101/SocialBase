@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ProfileCard from '../components/ProfileCard';
+import ProfilesStats from "../components/ProfileStats";
+import ProfileStats from "../components/ProfileStats";
+import {auto} from "@popperjs/core";
 
 const ProfilesPage = () => {
     const [profiles, setProfiles] = useState([]);
@@ -21,6 +24,8 @@ const ProfilesPage = () => {
     const [filterBanner, setFilterBanner] = useState('');
     const [filterLocation, setFilterLocation] = useState('');
     const navigate = useNavigate();
+    const [allProfiles, setAllProfiles] = useState([]);
+
 
     const fetchProfiles = async (
         pageNumber = 1,
@@ -35,20 +40,24 @@ const ProfilesPage = () => {
         bannerFlag = filterBanner,
         locationFlag = filterLocation
     ) => {
+        const filters = {
+            ...(value ? { [field]: value } : {}),
+            ...(privateFlag !== '' ? { is_private: privateFlag } : {}),
+            ...(verifiedFlag !== '' ? { is_verified: verifiedFlag } : {}),
+            ...(fakeFlag !== '' ? { is_fake: fakeFlag } : {}),
+            ...(bioFlag !== '' ? { has_bio: bioFlag } : {}),
+            ...(websiteFlag !== '' ? { has_website: websiteFlag } : {}),
+            ...(pictureFlag !== '' ? { profile_picture: pictureFlag } : {}),
+            ...(bannerFlag !== '' ? { profile_banner: bannerFlag } : {}),
+            ...(locationFlag !== '' ? { has_location: locationFlag } : {}),
+        };
+
         try {
             const res = await axios.get('/api/profiles/paginated', {
                 params: {
                     page: pageNumber,
                     limit,
-                    ...(value ? { [field]: value } : {}),
-                    ...(privateFlag !== '' ? { is_private: privateFlag } : {}),
-                    ...(verifiedFlag !== '' ? { is_verified: verifiedFlag } : {}),
-                    ...(fakeFlag !== '' ? { is_fake: fakeFlag } : {}),
-                    ...(bioFlag !== '' ? { has_bio: bioFlag } : {}),
-                    ...(websiteFlag !== '' ? { has_website: websiteFlag } : {}),
-                    ...(pictureFlag !== '' ? { profile_picture: pictureFlag } : {}),
-                    ...(bannerFlag !== '' ? { profile_banner: bannerFlag } : {}),
-                    ...(locationFlag !== '' ? { has_location: locationFlag } : {}),
+                    ...filters
                 },
             });
 
@@ -56,18 +65,27 @@ const ProfilesPage = () => {
             setTotalPages(res.data.totalPages || 1);
             setPage(res.data.page || 1);
             setFoundCount(res.data.data?.length * res.data.totalPages || 0);
+
+            // 🔄 Aggiorna anche allProfiles
+            const res2 = await axios.get('/api/profiles/filtered', { params: filters });
+            setAllProfiles(res2.data || []);
+            console.log(res2.data);
         } catch (err) {
             console.error("Errore nel fetch dei profili:", err);
             setProfiles([]);
+            setAllProfiles([]);
         }
     };
 
-    useEffect(() => {
-        fetchProfiles(page);
-    }, []);
+
+
+
+
+
 
     useEffect(() => {
         fetchProfiles(1);
+
     }, [
         filterPrivate,
         filterVerified,
@@ -80,6 +98,7 @@ const ProfilesPage = () => {
     ]);
 
 
+
     const handleNext = () => {
         if (page < totalPages) fetchProfiles(page + 1);
     };
@@ -87,6 +106,7 @@ const ProfilesPage = () => {
     const handlePrev = () => {
         if (page > 1) fetchProfiles(page - 1);
     };
+
 
     return (
         <div style={{ overflowX: 'auto' }}>
@@ -134,15 +154,15 @@ const ProfilesPage = () => {
                     <div key={f.name}>
                         <strong>{f.label}:</strong><br />
                         <label>
-                            <input type="radio" name={f.name} value="" checked={f.value === ''} onChange={(e) => { f.set(e.target.value); fetchProfiles(1); }} />
+                            <input type="radio" name={f.name} value="" checked={f.value === ''} onChange={(e) => { f.set(e.target.value);}} />
                             Tutti
                         </label>{' '}
                         <label>
-                            <input type="radio" name={f.name} value="true" checked={f.value === 'true'} onChange={(e) => { f.set(e.target.value); fetchProfiles(1); }} />
+                            <input type="radio" name={f.name} value="true" checked={f.value === 'true'} onChange={(e) => { f.set(e.target.value);}} />
                             Sì
                         </label>{' '}
                         <label>
-                            <input type="radio" name={f.name} value="false" checked={f.value === 'false'} onChange={(e) => { f.set(e.target.value); fetchProfiles(1); }} />
+                            <input type="radio" name={f.name} value="false" checked={f.value === 'false'} onChange={(e) => { f.set(e.target.value);}} />
                             No
                         </label>
                     </div>
@@ -160,22 +180,47 @@ const ProfilesPage = () => {
                 Trovati {foundCount} profili con i criteri di ricerca attuali.
             </p>
 
-            <div style={{display: 'flex',
-                flexDirection: 'column',
+            <div style={{
+                display: 'flex',
+                flexDirection: 'row',
                 alignItems: 'flex-start',
-                gap: '10px',
-                marginLeft: '0',
-                paddingLeft: '20px',  // opzionale, per non far toccare il bordo
-                width: 'fit-content'  }}>
+                justifyContent: 'flex-start',
+                width: '100%',
+            }}>
+                {/* Colonna delle card profilo */}
+                <div style={{
+                    flex: 3,
+                    maxWidth: '1000px',      // Impedisce che si allarghi troppo
+                    overflowX: 'auto',        // Se necessario, mostra scroll orizzontale interno
+                    marginLeft : '10px',
+                }}>
 
-            {profiles && profiles.length > 0 ? (
-                    profiles.map(profile => (
+
+                    {profiles.map((profile) => (
                         <ProfileCard key={profile.user_id} profile={profile} />
-                    ))
-                ) : (
-                    <p>Nessun profilo trovato.</p>
-                )}
+                    ))}
+                </div>
+
+
+                {/* Colonna delle statistiche */}
+                <div style={{
+                    flex: 1.5,
+                    maxWidth: '1200px',
+                    position: 'relative',
+                    top: '20px',
+                    marginLeft: '20px',
+                    marginRight: 0,
+                    alignSelf: 'flex-start',
+                    minWidth: '900px'
+                }}>
+
+                    <ProfileStats profiles={allProfiles} />
+                </div>
+
             </div>
+
+
+
         </div>
     );
 };

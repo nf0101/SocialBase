@@ -53,6 +53,57 @@ export const deleteProfile = async (req, res) => {
   }
 };
 
+export const getFilteredProfiles = async (req, res) => {
+  try {
+    const {
+      username,
+      email,
+      first_name,
+      last_name,
+      is_private,
+      is_verified,
+      is_fake,
+      has_bio,
+      has_website,
+      profile_picture,
+      profile_banner,
+      has_location,
+    } = req.query;
+
+    const filter = {};
+
+    if (username) filter.username = { $regex: new RegExp(username, 'i') };
+    if (email) filter.email = { $regex: new RegExp(email, 'i') };
+    if (first_name) filter.first_name = { $regex: new RegExp(first_name, 'i') };
+    if (last_name) filter.last_name = { $regex: new RegExp(last_name, 'i') };
+
+    const booleanFields = {
+      is_private,
+      is_verified,
+      is_fake,
+      has_bio,
+      has_website,
+      profile_picture,
+      profile_banner,
+      has_location,
+    };
+
+    for (const [field, value] of Object.entries(booleanFields)) {
+      if (typeof value !== 'undefined' && value !== '') {
+        filter[field] = value === 'true' ? 'True' : 'False';
+      }
+    }
+
+    const profiles = await Profile.find(filter);
+    res.json(profiles);
+
+  } catch (error) {
+    console.error('Errore nel getFilteredProfiles:', error);
+    res.status(500).json({ error: 'Errore nel recupero dei profili filtrati' });
+  }
+};
+
+
 export const getPaginatedProfiles = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;

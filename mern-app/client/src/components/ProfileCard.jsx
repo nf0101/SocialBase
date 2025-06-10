@@ -8,8 +8,15 @@ const ProfileCard = ({ profile }) => {
     const toggleExpanded = () => setExpanded(!expanded);
 
     return (
-        <div style={styles.card}>
-            <div style={styles.header}>
+        <div style={{
+            ...styles.card,
+            width: expanded ? '600px' : '300px',
+            overflow: expanded ? 'visible' : 'hidden',
+            transition: 'height 0.3s ease'
+        }}>
+
+
+        <div style={styles.header}>
                 <h3>
                     👤 <strong>{profile.username}</strong>
                 </h3>
@@ -70,15 +77,16 @@ const styles = {
     card: {
         border: '1px solid #ccc',
         borderRadius: '8px',
-        padding: '1px 12px',
-        marginBottom: '5px',
+        padding: '1px',
+        marginBottom: '10px',
         backgroundColor: '#f9f9f9',
         boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
         fontFamily: 'Arial, sans-serif',
-        maxWidth: '1000px',
-        margin: 'auto',
-        transition: 'all 0.3s ease-in-out',
+        transition: 'width 0.3s ease',
+        width: '100%', // lasciare gestione al contenitore
+        maxWidth: '800px' // larghezza massima leggibile
     },
+
     header: {
         display: 'flex',
         justifyContent: 'space-between',
