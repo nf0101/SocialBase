@@ -4,7 +4,7 @@ import {
     getActivitiesWithProfiles,
     createActivity,
     updateActivity,
-    deleteActivity, getPaginatedActivities, getActivitiesByUserId
+    deleteActivity, getPaginatedActivities, getActivitiesByUserId, getAllActivities
 } from '../controllers/activitiesController.js';
 
 const router = express.Router();
@@ -16,5 +16,5 @@ router.put('/update/:id', updateActivity);
 router.delete('/delete/:id', deleteActivity);
 router.get('/paginated', getPaginatedActivities);
 router.get('/of-profile/:userId', getActivitiesByUserId);
-
+router.get('/all', getAllActivities);
 export default router;

@@ -1,214 +1,138 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import HeaderPage from './HeaderPage';
-import FooterPage from './FooterPage';  // import del FooterPage
 
-function CrudPanel({ tipo }) {
-  const [createFields, setCreateFields] = useState([{ key: '', value: '' }]);
-  const [updateId, setUpdateId] = useState('');
-  const [updateKey, setUpdateKey] = useState('');
-  const [updateValue, setUpdateValue] = useState('');
-  const [deleteId, setDeleteId] = useState('');
+/* =====================================================================
+ *  CreateDashboard (profili + attività)
+ *  - Sezione collassabile "Crea entità" con header pill‑style.
+ *  - Campi disposti 2‑colonne, textarea full‑row.
+ *  - account_type e content_type resi <select> con categorie predefinite.
+ *  - Form si resetta a template dopo creazione riuscita.
+ * =====================================================================*/
 
-  const endpoint = tipo === 'profili' ? '/api/profiles' : '/api/activities';
+const booleanProfile  = ['is_private','is_verified','profile_picture','profile_banner','has_bio','has_website','has_location','is_fake'];
+const booleanActivity = ['is_weekend','has_media','contains_url','is_fake'];
 
-  const handleCreateChange = (index, field, value) => {
-    const updatedFields = [...createFields];
-    updatedFields[index][field] = value;
-    setCreateFields(updatedFields);
+const accountTypeOptions = [
+  'active_user',
+  'business',
+  'casual_user',
+  'news_updates',
+  'influencer',
+  'bot',
+  'crypto_scam',
+  'porn_scam',
+  'impersonation',
+  'phishing'
+];
+
+
+const templateProfile = {
+  user_id:'', username:'', email:'', full_name:'', first_name:'', last_name:'',
+  creation_date:'', account_age_days:'', profile_completeness:'',
+  home_country:'', home_region:'', home_city:'',
+  followers_count:'', following_count:'', posts_count:'',
+  account_type:'', language_preference:'',
+  is_private:'False', is_verified:'False', profile_picture:'False', profile_banner:'False',
+  has_bio:'False', has_website:'False', has_location:'False', is_fake:'False'
+};
+const templateActivity = {
+  activity_id:'', user_id:'', timestamp:'', content:'',
+  post_country:'', post_region:'', post_city:'',
+  device:'', platform:'', likes:'', comments:'', shares:'',
+  hour_of_day:'', day_of_week:'', media_type:'', character_count:'', hashtag_count:'', mention_count:'',
+  content_type:'', language:'',
+  is_weekend:'False', has_media:'False', contains_url:'False', is_fake:'False'
+};
+
+const box   = { border:'1px solid #ddd', borderRadius:12, padding:20, width:380, background:'#fff', display:'flex', flexDirection:'column', height:520 };
+const label = { fontWeight:600, display:'block', marginBottom:4, fontSize:13 };
+const input = { padding:8, borderRadius:8, border:'1px solid #ccc', width:'100%', boxSizing:'border-box' };
+const btn   = { marginTop:14, background:'linear-gradient(135deg,#4e8cff 0%,#6c63ff 100%)', color:'#fff', border:'none', borderRadius:8, padding:10, fontWeight:600 };
+
+function CreatePanel({ tipo }){
+  const isProfile = tipo==='profili';
+  const endpoint  = isProfile ? '/api/profiles' : '/api/activities';
+  const boolList  = isProfile ? booleanProfile : booleanActivity;
+  const template  = isProfile ? templateProfile : templateActivity;
+
+  const [formData,setFormData] = useState(template);
+
+  const isBoolean = (k)=> boolList.includes(k);
+  const isLong    = (k,v)=> k==='content' || String(v).length>60;
+  const change    = (k,v)=> setFormData(p=>({...p,[k]:v}));
+
+  const handleCreate = async(e)=>{
+    e.preventDefault();
+    await axios.post(`${endpoint}/create`,formData);
+    alert('✅ creato');
+    setFormData(template);          // reset form
   };
 
-  const addCreateField = () => {
-    setCreateFields([...createFields, { key: '', value: '' }]);
-  };
+  return(
+      <form onSubmit={handleCreate} style={box}>
+        <h4 style={{textAlign:'center',marginBottom:12}}>{`Crea ${tipo}`}</h4>
 
-  const handleCreate = async () => {
-    const payload = {};
-    for (const field of createFields) {
-      if (field.key) payload[field.key] = field.value;
-    }
-    try {
-      const res = await axios.post(`${endpoint}/create`, payload);
-      alert(`✅ ${tipo} creato con successo`);
-      console.log('Creato:', res.data);
-    } catch (err) {
-      alert('❌ Errore nella creazione');
-      console.error(err);
-    }
-  };
+        <div style={{flex:1,overflowY:'auto',display:'flex',flexWrap:'wrap',gap:12}}>
+          {Object.entries(formData).map(([k,v])=>{
+            const full = isLong(k,v);
+            return(
+                <div key={k} style={{flex:full?'1 1 100%':'1 1 47%'}}>
+                  <label style={label}>{k}</label>
 
-  const handleUpdate = async () => {
-    try {
-      const payload = { [updateKey]: updateValue };
-      const res = await axios.put(`${endpoint}/update/${updateId}`, payload);
-      alert(`✏️ ${tipo} aggiornato con successo`);
-      console.log('Aggiornato:', res.data);
-    } catch (err) {
-      alert('❌ Errore aggiornamento');
-      console.error(err);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      const res = await axios.delete(`${endpoint}/delete/${deleteId}`);
-      alert(`🗑️ ${tipo} eliminato con successo`);
-      console.log('Eliminato:', res.data);
-    } catch (err) {
-      alert('❌ Errore eliminazione');
-      console.error(err);
-    }
-  };
-
-  // Stili CSS nel componente
-  const boxStyle = {
-    border: '1px solid #ddd',
-    borderRadius: '12px',
-    padding: '20px',
-    width: '280px',
-    minHeight: '260px',
-    boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    marginBottom: '20px',
-  };
-
-  const inputStyle = {
-    padding: '8px 10px',
-    borderRadius: '8px',
-    border: '1px solid #ccc',
-    fontSize: '14px',
-    marginBottom: '10px',
-    width: '100%',
-    boxSizing: 'border-box',
-  };
-
-  const buttonStyle = (bgColor) => ({
-    backgroundColor: bgColor,
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    padding: '10px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: '14px',
-    transition: 'background-color 0.3s',
-  });
-
-  const fieldRow = {
-    display: 'flex',
-    gap: '10px',
-    marginBottom: '10px',
-  };
-
-  return (
-    <div style={{ marginBottom: '50px' }}>
-      <h2 style={{ textAlign: 'center', fontWeight: '700', color: '#333' }}>{tipo.toUpperCase()}</h2>
-
-      {/* CREATE BOX */}
-      <div style={boxStyle}>
-        <h3 style={{ marginBottom: '15px', color: '#555' }}>CREATE</h3>
-        <div style={{ flexGrow: 1, overflowY: 'auto' }}>
-          {createFields.map((field, index) => (
-            <div key={index} style={fieldRow}>
-              <input
-                placeholder="Campo"
-                value={field.key}
-                onChange={(e) => handleCreateChange(index, 'key', e.target.value)}
-                style={{ ...inputStyle, flex: 1 }}
-              />
-              <input
-                placeholder="Valore"
-                value={field.value}
-                onChange={(e) => handleCreateChange(index, 'value', e.target.value)}
-                style={{ ...inputStyle, flex: 1 }}
-              />
-            </div>
-          ))}
+                  {/* BOOLEANI */}
+                  {isBoolean(k) ? (
+                          <input type="checkbox" checked={v==='True'} onChange={e=>change(k,e.target.checked?'True':'False')} />
+                      ) : /* SELECT account_type / content_type */
+                      (isProfile && k==='account_type') ? (
+                          <select value={v} onChange={e=>change(k,e.target.value)} style={input}>
+                            <option value="">— scegli categoria —</option>
+                            {accountTypeOptions.map(opt=> <option key={opt} value={opt}>{opt}</option>)}
+                          </select>
+                      ) : (!isProfile && k==='content_type') ? (
+                              <select value={v} onChange={e=>change(k,e.target.value)} style={input}>
+                                <option value="">— scegli categoria —</option>
+                                {accountTypeOptions.map(opt=> <option key={opt} value={opt}>{opt}</option>)}
+                              </select>
+                          ) : /* TEXTAREA lunga */
+                          full ? (
+                              <textarea value={v} onChange={e=>change(k,e.target.value)} style={{...input,height:60}} />
+                          ) : /* INPUT testo normale */(
+                              <input value={v} onChange={e=>change(k,e.target.value)} style={input} />
+                          )}
+                </div>
+            );
+          })}
         </div>
-        <button
-          onClick={addCreateField}
-          style={{ ...buttonStyle('#888'), marginBottom: '15px', width: '100%' }}
-          type="button"
-        >
-          ➕ Aggiungi campo
-        </button>
-        <button onClick={handleCreate} style={buttonStyle('green')} type="button">
-          ✅ Crea {tipo}
-        </button>
-      </div>
 
-      {/* UPDATE BOX */}
-      <div style={boxStyle}>
-        <h3 style={{ marginBottom: '15px', color: '#555' }}>UPDATE</h3>
-        <input
-          placeholder="ID"
-          value={updateId}
-          onChange={(e) => setUpdateId(e.target.value)}
-          style={inputStyle}
-        />
-        <input
-          placeholder="Campo da aggiornare"
-          value={updateKey}
-          onChange={(e) => setUpdateKey(e.target.value)}
-          style={inputStyle}
-        />
-        <input
-          placeholder="Nuovo valore"
-          value={updateValue}
-          onChange={(e) => setUpdateValue(e.target.value)}
-          style={inputStyle}
-        />
-        <button onClick={handleUpdate} style={buttonStyle('blue')} type="button">
-          ✏️ Aggiorna {tipo}
-        </button>
-      </div>
-
-      {/* DELETE BOX */}
-      <div style={boxStyle}>
-        <h3 style={{ marginBottom: '15px', color: '#555' }}>DELETE</h3>
-        <input
-          placeholder="ID da eliminare"
-          value={deleteId}
-          onChange={(e) => setDeleteId(e.target.value)}
-          style={inputStyle}
-        />
-        <button onClick={handleDelete} style={buttonStyle('crimson')} type="button">
-          🗑️ Elimina {tipo}
-        </button>
-      </div>
-    </div>
+        <button type="submit" style={btn}>✅ Crea</button>
+      </form>
   );
 }
 
-export default function CrudPage() {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-      }}
-    >
-      <HeaderPage />
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          gap: '40px',
-          padding: '40px 20px',
-          backgroundColor: '#f9f9f9',
-          flexGrow: 1,
-          boxSizing: 'border-box',
-        }}
-      >
-        <CrudPanel tipo="profili" />
-        <CrudPanel tipo="attività" />
+export default function CreateDashboard(){
+  const [open,setOpen]=useState(false);
+  return(
+      <div style={{marginTop:40}}>
+        <div
+            onClick={()=>setOpen(p=>!p)}
+            style={{
+              cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,
+              fontSize:18,fontWeight:700,
+              background:'linear-gradient(135deg, #6c63ff 0%, #4e8cff 100%)',
+              color:'#fff', padding:'12px 24px',borderRadius:9999, border:'2px solid #4e8cff',
+              maxWidth:260,margin:'0 auto',boxShadow:'0 3px 8px rgba(0,0,0,.15)'
+            }}
+        >
+          <span>Crea entità</span>
+          <span>{open?'▲':'▼'}</span>
+        </div>
+
+        {open && (
+            <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',gap:40,padding:'30px 20px',background:'#f9f9f9'}}>
+              <CreatePanel tipo="profili" />
+              <CreatePanel tipo="attività" />
+            </div>
+        )}
       </div>
-      <FooterPage />  {/* inserito FooterPage */}
-    </div>
   );
 }

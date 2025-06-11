@@ -86,7 +86,7 @@ export const deleteActivity = async (req, res) => {
 export const getPaginatedActivities = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 25;
         const skip = (page - 1) * limit;
 
         // Recupero delle attività
@@ -139,6 +139,17 @@ export const getActivitiesByUserId = async (req, res) => {
         res.status(500).json({ message: 'Errore nel server' });
     }
 };
+
+// controllers/activitiesController.js
+export const getAllActivities = async (req, res) => {
+    try {
+        const activities = await Activity.find().lean();
+        res.json(activities);
+    } catch (err) {
+        res.status(500).json({ error: 'Errore nel recupero' });
+    }
+};
+
 
 
 

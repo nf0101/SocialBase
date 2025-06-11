@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import ActivityCard from "../components/ActivityCard";
+import ActivitiesStats from "../components/ActivitiesStats";
 
 const UserActivitiesPage = () => {
     const { userId } = useParams();
@@ -37,12 +38,35 @@ const UserActivitiesPage = () => {
 
 
     return (
-        <div>
-            <h2>Attività di {username || userId}</h2>
-            {activities.map((activity) => (
-                <ActivityCard key={activity.activity_id} activity={activity} />
-            ))}
+
+        <div style={{ padding: '20px' }}>
+            {/* Titolo centrato su riga dedicata */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
+                <h2 style={{ margin: 0 }}>
+                    Attività di {username || userId}
+                </h2>
+            </div>
+
+            <div style={{ display: 'flex', gap: 20 }}>
+                {/* Colonna attività */}
+                <div style={{ flex: 3, maxWidth: '100%', overflowX: 'auto' }}>
+                    {activities.map((act) => (
+                        <ActivityCard key={act._id} activity={act} />
+                    ))}
+                </div>
+
+                {/* Colonna statistiche */}
+
+                {activities.length > 0 && (
+                    <div style={{ flex: 1.5, minWidth: 340 }}>
+                        <ActivitiesStats activities={activities} />   {/* ⇦ prop passata */}
+                    </div>
+                )}
+
+            </div>
         </div>
+
+
     );
 };
 

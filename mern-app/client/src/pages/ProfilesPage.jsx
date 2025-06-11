@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import ProfileCard from '../components/ProfileCard';
 import ProfilesStats from "../components/ProfileStats";
 import ProfileStats from "../components/ProfileStats";
 import {auto} from "@popperjs/core";
+import ProfileCard  from '../components/ProfileCard';
 
 const ProfilesPage = () => {
     const [profiles, setProfiles] = useState([]);
